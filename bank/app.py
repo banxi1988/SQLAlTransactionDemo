@@ -4,7 +4,7 @@ __author__ = 'banxi'
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, BigInteger, String, MetaData
 
-SQLALCHEMY_DATABASE_URI = 'postgresql://bankapp:2017bank@localhost:5432/icq'
+SQLALCHEMY_DATABASE_URI = 'postgresql://bankapp:2017bank@localhost:5432/bank'
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
 
