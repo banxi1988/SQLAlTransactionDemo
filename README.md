@@ -66,5 +66,34 @@ COMMIT
 
 3. 为了避免上面的错误. 使用事务来处理,这样即使出错,也是整个操作回滚. 见代码 `fix1` 中的 `test_classic_transaction_fix1`
 
+### 小结
+对于 SQLAlchemy Core 来说,典型的事物使用方法如下:
+
+```python
+connection = engine.connect()
+trans = connection.begin()
+try:
+    # execute some thing
+    trans.commit()
+except:
+    trans.rallback()
+    raise 
+```
+可以通过使用 context manager 来简化:
+
+1. 直接使用 `engine.begin()`
+```python
+with engine.begin() as conn:
+    # exectue some thing
+```
+
+2. 使用 `connection.begin()`
+
+```python
+with connection.begin() as trans:
+    # execute some thing
+```
+
+
 
   
