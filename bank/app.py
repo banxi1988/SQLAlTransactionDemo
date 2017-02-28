@@ -18,6 +18,14 @@ metadata.create_all()
 
 
 class Account(object):
+    _conn = None
+
+    @classmethod
+    def get_conn(cls):
+        if cls._conn and not cls._conn.closed:
+            return cls._conn
+        return engine.connect()
+
     def __init__(self,name, amount):
         self.name  = name
         self.amount = amount
@@ -25,7 +33,7 @@ class Account(object):
     @classmethod
     def find_by_name(cls,name):
         from sqlalchemy.sql import select
-        conn = engine.connect()
+        conn = cls.get_conn()
         stmt = select([account_table]).where(account_table.c.name == name)
         result = conn.execute(stmt)
         row = result.first()
@@ -37,7 +45,7 @@ class Account(object):
         stmt = account_table.update()\
             .where(account_table.c.name == self.name)\
             .values(amount=self.amount)
-        conn = engine.connect()
+        conn = self.get_conn()
         result = conn.execute(stmt)
         return result.rowcount == 1
 
