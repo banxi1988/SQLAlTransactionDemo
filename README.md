@@ -96,4 +96,21 @@ with connection.begin() as trans:
 
 
 
-  
+## 嵌套事务
+在 `test_nested_transaction` 中 有嵌套的事务. 实际执行之后,观察到输出如下:
+
+```python
+2017-02-28 16:52:23,930 INFO sqlalchemy.engine.base.Engine BEGIN (implicit)
+2017-02-28 16:52:23,930 INFO sqlalchemy.engine.base.Engine UPDATE account SET amount=%(amount)s WHERE account.name = %(name_1)s
+2017-02-28 16:52:23,930 INFO sqlalchemy.engine.base.Engine {'amount': 600L, 'name_1': u'A'}
+2017-02-28 16:52:23,931 INFO sqlalchemy.engine.base.Engine UPDATE account SET amount=%(amount)s WHERE account.name = %(name_1)s
+2017-02-28 16:52:23,931 INFO sqlalchemy.engine.base.Engine {'amount': 400L, 'name_1': u'B'}
+2017-02-28 16:52:23,931 INFO sqlalchemy.engine.base.Engine UPDATE account SET amount=%(amount)s WHERE account.name = %(name_1)s
+2017-02-28 16:52:23,931 INFO sqlalchemy.engine.base.Engine {'amount': 500L, 'name_1': u'A'}
+2017-02-28 16:52:23,932 INFO sqlalchemy.engine.base.Engine UPDATE account SET amount=%(amount)s WHERE account.name = %(name_1)s
+2017-02-28 16:52:23,932 INFO sqlalchemy.engine.base.Engine {'amount': 600L, 'name_1': u'W'}
+2017-02-28 16:52:23,932 INFO sqlalchemy.engine.base.Engine COMMIT
+```
+可见在嵌套的事务中,最终是被摊平了.内层的 commit 并不是引导整个事务的 commit.
+
+但是 内层的 事务的 rollback 会导致外层事务的 rollback. 见 testcase `test_nested_transaction_inner_rollback`

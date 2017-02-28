@@ -10,12 +10,11 @@ def account_table():
     metadata.create_all(engine)
 
     # 2) 初始化表数据
-    accounts.insert().values(name='A', amount=500)
-    accounts.insert().values(name='B', amount=500)
     conn = engine.connect()
     conn.execute(accounts.insert(),[
         {'name': 'A','amount':500},
         {'name': 'B','amount':500},
+        {'name': 'W','amount':500},
     ])
 
 
